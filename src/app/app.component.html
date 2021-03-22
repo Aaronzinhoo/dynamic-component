@@ -1,5 +1,6 @@
 <mat-card>
   <h3> This is our dynamic stuff</h3>
   <ng-template appView></ng-template>
+  <app-default *ngIf="component==='Default'"></app-default>
   <button (click)="loadComponent()"> Change Component</button>
 </mat-card>

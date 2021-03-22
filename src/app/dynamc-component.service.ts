@@ -1,17 +1,31 @@
 import {Component} from '@angular/compiler/src/core';
-import {Injectable, Type} from '@angular/core';
-import {SupriseComponent} from 'src/app/suprise/suprise.component';
-import {UclaRocksComponent} from 'src/app/ucla-rocks/ucla-rocks.component';
+import {
+  Injectable,
+  Type,
+  ViewContainerRef,
+  ComponentFactoryResolver,
+} from '@angular/core';
+import {FunLibInterface} from 'fun-lib';
 
 @Injectable({
   providedIn: 'any',
 })
 export class DynamcComponentService {
-  components = {ucla: UclaRocksComponent, surprise: SupriseComponent};
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
 
-  constructor() {}
+  async injectComponent(
+    viewContainerRef: ViewContainerRef,
+    componentType: string
+  ) {
+    const componentLoader = this.getComponent(componentType);
+    const component: FunLibInterface = await componentLoader();
+    console.log(component.data);
+    return viewContainerRef.createComponent(
+      this.componentFactoryResolver.resolveComponentFactory(component as any)
+    );
+  }
 
   getComponent(componentType: string) {
-    return this.components[componentType];
+    return () => import('fun-components-lib').then((lib) => lib[componentType]);
   }
 }

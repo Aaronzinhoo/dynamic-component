@@ -1,14 +1,8 @@
-import {
-  Component,
-  ViewChild,
-  ViewContainerRef,
-  ComponentFactoryResolver,
-  ViewRef,
-  OnInit,
-  OnDestroy,
-} from '@angular/core';
-import {ViewDirectiveDirective} from './view-directive.directive';
+import {Component, ViewChild, OnInit, OnDestroy} from '@angular/core';
+
 import {DynamcComponentService} from 'src/app/dynamc-component.service';
+
+import {ViewDirectiveDirective} from './view-directive.directive';
 
 @Component({
   selector: 'app-root',
@@ -20,14 +14,11 @@ export class AppComponent implements OnInit, OnDestroy {
   @ViewChild(ViewDirectiveDirective, {static: true})
   appView: ViewDirectiveDirective;
 
-  component: string = 'ucla';
-  dynamicComponentService: DynamcComponentService = new DynamcComponentService();
+  component: string = 'Default';
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+  constructor(private dynamicComponentService: DynamcComponentService) {}
 
-  ngOnInit() {
-    this.loadComponent();
-  }
+  ngOnInit() {}
 
   ngOnDestroy() {}
 
@@ -35,26 +26,20 @@ export class AppComponent implements OnInit, OnDestroy {
   loadComponent() {
     this.toggleComponent();
 
-    // get next component blueprint into factory
-    const nextComponent = this.dynamicComponentService.getComponent(
-      this.component
-    );
-    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(
-      nextComponent
-    );
-
     // clear view of previously loaded component
     const viewContainerRef = this.appView.viewContainerRef;
-    if (viewContainerRef !== null) {
-      viewContainerRef.clear();
-    }
+    viewContainerRef.clear();
 
-    // for similar component types can type createComponent so data can be added dynamically
-    // this creates the component passed in the location where appView Directive is
-    viewContainerRef.createComponent(componentFactory);
+    this.dynamicComponentService.injectComponent(
+      viewContainerRef,
+      this.component
+    );
   }
 
   toggleComponent() {
-    this.component = this.component === 'ucla' ? 'surprise' : 'ucla';
+    this.component =
+      this.component === 'SupriseComponent'
+        ? 'HideSupriseComponent'
+        : 'SupriseComponent';
   }
 }
